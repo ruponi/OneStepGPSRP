@@ -58,12 +58,6 @@ final class DeviceService: DeviceServiceProtocol {
         
         // Use the same retry logic
         let data = try await performRequestWithRetry(request: request)
-        if let jsonString = String(data: data, encoding: .utf8) {
-          print("Raw JSON: \(jsonString)")
-        } else {
-          print("⚠️ Couldn't decode data to UTF8 string")
-        }
-        
         let decoder = JSONDecoder.iso8601
         let decoded = try decoder.decode(DeviceResponse.self, from: data)
         return decoded.resultList
@@ -99,37 +93,38 @@ final class DeviceService: DeviceServiceProtocol {
 }
 
 fileprivate extension JSONDecoder {
-  /// A decoder set up for ISO-8601 dates everywhere
-  static let iso8601: JSONDecoder = {
-    let decoder = JSONDecoder()
-      let isoFormatter = ISO8601DateFormatter()
-      isoFormatter.formatOptions = [
-        .withInternetDateTime,
-        .withFractionalSeconds
-      ]
-
-      decoder.dateDecodingStrategy = .custom { decoder in
-        let container = try decoder.singleValueContainer()
-        let dateStr = try container.decode(String.self)
+    /// A decoder set up for ISO-8601 dates everywhere
+    static let iso8601: JSONDecoder = {
         
-        // Try fractional‐seconds format first
-        if let date = isoFormatter.date(from: dateStr) {
-          return date
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateStr = try container.decode(String.self)
+            
+            // Try fractional‐seconds first:
+            let fractional = ISO8601DateFormatter()
+            fractional.formatOptions = [
+                .withInternetDateTime,
+                .withFractionalSeconds
+            ]
+            if let date = fractional.date(from: dateStr) {
+                return date
+            }
+            
+            // Fallback to plain ISO8601:
+            let plain = ISO8601DateFormatter()
+            plain.formatOptions = [.withInternetDateTime]
+            if let date = plain.date(from: dateStr) {
+                return date
+            }
+            
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Invalid date: '\(dateStr)'—expected ISO8601."
+            )
         }
-        // Fall back to plain ISO8601
-        let fallback = ISO8601DateFormatter()
-        fallback.formatOptions = [.withInternetDateTime]
-        if let date = fallback.date(from: dateStr) {
-          return date
-        }
-        
-        throw DecodingError.dataCorruptedError(
-          in: container,
-          debugDescription: "Invalid date: '\(dateStr)'—expected ISO8601."
-        )
-      }
-      decoder.keyDecodingStrategy = .convertFromSnakeCase
-    return decoder
-  }()
+        return decoder
+    }()
 }
 
