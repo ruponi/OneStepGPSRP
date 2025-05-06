@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0FBE79602DC345A400BD0670 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FBE795F2DC345A400BD0670 /* MapKit.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0FBE78DA2DC3129E00BD0670 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		0FBE78C72DC3129C00BD0670 /* OneStepGPSRP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneStepGPSRP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FBE78D92DC3129E00BD0670 /* OneStepGPSRPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OneStepGPSRPTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FBE78E32DC3129E00BD0670 /* OneStepGPSRPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OneStepGPSRPUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0FBE795F2DC345A400BD0670 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0FBE79602DC345A400BD0670 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +84,7 @@
 				0FBE78C92DC3129C00BD0670 /* OneStepGPSRP */,
 				0FBE78DC2DC3129E00BD0670 /* OneStepGPSRPTests */,
 				0FBE78E62DC3129E00BD0670 /* OneStepGPSRPUITests */,
+				0FBE795E2DC345A300BD0670 /* Frameworks */,
 				0FBE78C82DC3129C00BD0670 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +97,14 @@
 				0FBE78E32DC3129E00BD0670 /* OneStepGPSRPUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		0FBE795E2DC345A300BD0670 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0FBE795F2DC345A400BD0670 /* MapKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

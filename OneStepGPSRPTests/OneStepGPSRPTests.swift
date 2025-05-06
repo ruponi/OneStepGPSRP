@@ -7,30 +7,62 @@
 
 import XCTest
 @testable import OneStepGPSRP
+import Combine
 
-final class OneStepGPSRPTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+/// Mock success service
+private struct MockSuccessService: DeviceServiceProtocol {
+    let toReturn: [Device]
+    func fetchDevices(latestPoint: Bool) async throws -> [Device] {
+        return toReturn
     }
+}
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+/// Mock failure service
+private struct MockFailureService: DeviceServiceProtocol {
+    enum Err: Error, LocalizedError { case fail
+        var errorDescription: String? { "Network error" }
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    func fetchDevices(latestPoint: Bool) async throws -> [Device] {
+        throw Err.fail
     }
+}
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+@MainActor
+final class DeviceMapModelTests: XCTestCase {
+    /// Test that a successful load populates `devices` and clears errors.
+    func testLoadDevicesSuccess() async {
+        // Arrange
+        let now = Date()
+        let dummy = Device(
+            deviceId: "x", createdAt: now, updatedAt: now,
+            activatedAt: nil, deliveredAt: nil, factoryId: "",
+            activeState: "", displayName: "",
+            make: "", model: "",
+            connData: ConnData(calampNextLookupTime: nil, calampIprOmegaFeePaid: false, isOnCtc: false),
+            settings: nil, userIdList: [], online: true,
+            latestDevicePoint: nil, latestAccurateDevicePoint: nil
+        )
+        let vm = DeviceMapModel(service: MockSuccessService(toReturn: [dummy]))
+        
+        // Act
+        await vm.loadDevices(latestPoint: true)
+        
+        // Assert
+        XCTAssertEqual(vm.devices.count, 1)
+        XCTAssertNil(vm.errorMessage)
     }
-
+    
+    /// Test that a failed load sets `errorMessage` and leaves `devices` unchanged.
+    func testLoadDevicesFailure() async {
+        // Arrange
+        let vm = DeviceMapModel(service: MockFailureService())
+        vm.devices = [ /* preloaded device */ ]
+        
+        // Act
+        await vm.loadDevices(latestPoint: false)
+        
+        // Assert
+        XCTAssertNotNil(vm.errorMessage)
+        XCTAssertTrue(vm.devices.isEmpty, "Devices array should be cleared on failure")
+    }
 }
