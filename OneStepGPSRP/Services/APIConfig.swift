@@ -9,6 +9,6 @@ import Foundation
 /// Holds your API‐key and baseURL (you can swap baseURL per build configuration)
 struct APIConfig {
     /// Add API key here
-    static let apiKey = "Xl-8_ceibpMHqr4YZ72uFy5xQfjbOPXstocE8b_Zkmw"
+    static let apiKey = ""
     static let baseURL = URL(string: "https://track.onestepgps.com/v3/api/public")!
 }

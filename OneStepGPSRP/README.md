@@ -99,6 +99,7 @@ Run all tests with **Product → Test** (`⌘U`).
 * **API Key**
 
   * Defined in `APIConfig.swift`
+* ** Need to set API key to make app work
 
 
 
